@@ -8,7 +8,6 @@ SERVICE_STATUS ServiceStatus;
 SERVICE_STATUS_HANDLE hStatus; 
 void  ServiceMain(int argc, char** argv); 
 void  ControlHandler(DWORD request); 
-int InitService();
 HANDLE stopServiceEvent = 0;
 
 
@@ -35,7 +34,7 @@ void WINAPI ServiceMain( DWORD /*argc*/, TCHAR* /*argv*/[] )
     ServiceStatus.dwWaitHint           = 0; 
  
     hStatus = RegisterServiceCtrlHandler(
-		"Test Service B2", 
+		"Test Service B6", 
 		(LPHANDLER_FUNCTION)ControlHandler); 
 
 
@@ -84,27 +83,6 @@ void WINAPI ServiceMain( DWORD /*argc*/, TCHAR* /*argv*/[] )
 
 
 
-///*
-// * Function:  StartSvc 
-// * --------------------
-// *  Start the service after installation
-// *    
-// */
-void StartSvc()
-{
-	SC_HANDLE serviceControlManager = OpenSCManager( 0, 0, SC_MANAGER_ALL_ACCESS );
-	SC_HANDLE serviceHandle = OpenService(serviceControlManager,"Test Service B2" , SERVICE_ALL_ACCESS );
-
-	StartService(serviceHandle,0,NULL);
-
-	CloseServiceHandle(serviceControlManager); 
-        CloseServiceHandle(serviceHandle);
-        return; 
-}
-
-
-
-
 /*
  * Function:  ControlHandler 
  * --------------------
@@ -143,6 +121,9 @@ void ControlHandler(DWORD request)
 } 
 
 
+
+
+
 /*
  * Function:  InstallService 
  * --------------------
@@ -159,7 +140,7 @@ void InstallService()
 
 		{
 			SC_HANDLE service = CreateService( serviceControlManager,    			/* register this executable as a service */
-							"Test Service B2", "Test Service B2",
+							"Test Service B6", "Test Service B6",
 							SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
 							SERVICE_AUTO_START, SERVICE_ERROR_IGNORE, path,
 							0, 0, 0, 0, 0 );
@@ -174,10 +155,34 @@ void InstallService()
 
 
 
+
+
+///*
+// * Function:  StartSvc 
+// * --------------------
+// *  Start the service after installation
+// *    
+// */
+void StartSvc()
+{
+	SC_HANDLE serviceControlManager = OpenSCManager( 0, 0, SC_MANAGER_ALL_ACCESS );
+	SC_HANDLE serviceHandle = OpenService(serviceControlManager,"Test Service B6" , SERVICE_ALL_ACCESS );
+
+	StartService(serviceHandle,0,NULL);
+
+	CloseServiceHandle(serviceControlManager); 
+        CloseServiceHandle(serviceHandle);
+        return; 
+}
+
+
+
+
+
 int main()
 { 
     SERVICE_TABLE_ENTRY ServiceTable[2];
-    ServiceTable[0].lpServiceName = "Test Service B2";
+    ServiceTable[0].lpServiceName = "Test Service B6";
     ServiceTable[0].lpServiceProc = (LPSERVICE_MAIN_FUNCTION)ServiceMain;
 
     ServiceTable[1].lpServiceName = NULL;
@@ -186,7 +191,6 @@ int main()
 
 	InstallService();
 	StartSvc();
-	
   
   	return 0;
 
