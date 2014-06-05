@@ -22,7 +22,7 @@ HANDLE stopServiceEvent = 0;
  *  param:  service name &  pointer to the ControlHandlerfunction
  */
 
-void WINAPI ServiceMain( DWORD /*argc*/, TCHAR* /*argv*/[] )
+void ServiceMain(int argc, char** argv) 
 { 
  
     ServiceStatus.dwServiceType        = SERVICE_WIN32; 
@@ -34,7 +34,7 @@ void WINAPI ServiceMain( DWORD /*argc*/, TCHAR* /*argv*/[] )
     ServiceStatus.dwWaitHint           = 0; 
  
     hStatus = RegisterServiceCtrlHandler(
-		"Test Service B6", 
+		"Test Service C1", 
 		(LPHANDLER_FUNCTION)ControlHandler); 
 
 
@@ -140,7 +140,7 @@ void InstallService()
 
 		{
 			SC_HANDLE service = CreateService( serviceControlManager,    			/* register this executable as a service */
-							"Test Service B6", "Test Service B6",
+							"Test Service C1", "Test Service C1",
 							SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
 							SERVICE_AUTO_START, SERVICE_ERROR_IGNORE, path,
 							0, 0, 0, 0, 0 );
@@ -166,7 +166,7 @@ void InstallService()
 void StartSvc()
 {
 	SC_HANDLE serviceControlManager = OpenSCManager( 0, 0, SC_MANAGER_ALL_ACCESS );
-	SC_HANDLE serviceHandle = OpenService(serviceControlManager,"Test Service B6" , SERVICE_ALL_ACCESS );
+	SC_HANDLE serviceHandle = OpenService(serviceControlManager,"Test Service C1" , SERVICE_ALL_ACCESS );
 
 	StartService(serviceHandle,0,NULL);
 
@@ -182,7 +182,7 @@ void StartSvc()
 int main()
 { 
     SERVICE_TABLE_ENTRY ServiceTable[2];
-    ServiceTable[0].lpServiceName = "Test Service B6";
+    ServiceTable[0].lpServiceName = "Test Service C1";
     ServiceTable[0].lpServiceProc = (LPSERVICE_MAIN_FUNCTION)ServiceMain;
 
     ServiceTable[1].lpServiceName = NULL;
