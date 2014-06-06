@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <Winsvc.h>
+#include <tchar.h>
 
 
 
@@ -9,6 +10,7 @@ SERVICE_STATUS_HANDLE hStatus;
 void  ServiceMain(int argc, char** argv); 
 void  ControlHandler(DWORD request); 
 HANDLE stopServiceEvent = 0;
+#define SERVICE_NAME  _T("Test Service V2")
 
 
 
@@ -34,7 +36,7 @@ void ServiceMain(int argc, char** argv)
     ServiceStatus.dwWaitHint           = 0; 
  
     hStatus = RegisterServiceCtrlHandler(
-		"Test Service C1", 
+		SERVICE_NAME, 
 		(LPHANDLER_FUNCTION)ControlHandler); 
 
 
@@ -140,7 +142,7 @@ void InstallService()
 
 		{
 			SC_HANDLE service = CreateService( serviceControlManager,    			/* register this executable as a service */
-							"Test Service C1", "Test Service C1",
+							SERVICE_NAME, SERVICE_NAME,
 							SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
 							SERVICE_AUTO_START, SERVICE_ERROR_IGNORE, path,
 							0, 0, 0, 0, 0 );
@@ -166,7 +168,7 @@ void InstallService()
 void StartSvc()
 {
 	SC_HANDLE serviceControlManager = OpenSCManager( 0, 0, SC_MANAGER_ALL_ACCESS );
-	SC_HANDLE serviceHandle = OpenService(serviceControlManager,"Test Service C1" , SERVICE_ALL_ACCESS );
+	SC_HANDLE serviceHandle = OpenService(serviceControlManager,SERVICE_NAME , SERVICE_ALL_ACCESS );
 
 	StartService(serviceHandle,0,NULL);
 
@@ -182,7 +184,7 @@ void StartSvc()
 int main()
 { 
     SERVICE_TABLE_ENTRY ServiceTable[2];
-    ServiceTable[0].lpServiceName = "Test Service C1";
+    ServiceTable[0].lpServiceName = SERVICE_NAME;
     ServiceTable[0].lpServiceProc = (LPSERVICE_MAIN_FUNCTION)ServiceMain;
 
     ServiceTable[1].lpServiceName = NULL;
