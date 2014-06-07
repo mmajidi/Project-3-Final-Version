@@ -10,7 +10,7 @@ SERVICE_STATUS_HANDLE hStatus;
 void  ServiceMain(int argc, char** argv); 
 void  ControlHandler(DWORD request); 
 HANDLE stopServiceEvent = 0;
-#define SERVICE_NAME  _T("Test Service V2")
+#define SERVICE_NAME  _T("Test Service")
 
 
 
@@ -42,16 +42,15 @@ void ServiceMain(int argc, char** argv)
 
     if (hStatus) 
     { 
-        		// service is starting
+
 		ServiceStatus.dwCurrentState = SERVICE_START_PENDING;
 		SetServiceStatus( hStatus, &ServiceStatus );
 
-		// do initialisation here
-		stopServiceEvent = CreateEvent( 0, FALSE, FALSE, 0 );
+		 
+		stopServiceEvent = CreateEvent( 0, FALSE, FALSE, 0 );   // do initialisation
 
-				// running
 
-				ServiceStatus.dwControlsAccepted |= (SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN);
+		ServiceStatus.dwControlsAccepted |= (SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN);
 		ServiceStatus.dwCurrentState = SERVICE_RUNNING;
 		SetServiceStatus( hStatus, &ServiceStatus );
 
@@ -63,15 +62,12 @@ void ServiceMain(int argc, char** argv)
 		}
 		while ( WaitForSingleObject( stopServiceEvent, 5000 ) == WAIT_TIMEOUT );
 
-		// service was stopped
 		ServiceStatus.dwCurrentState = SERVICE_STOP_PENDING;
 		SetServiceStatus( hStatus, &ServiceStatus );
 
-		// do cleanup here
 		CloseHandle( stopServiceEvent );
 		stopServiceEvent = 0;
 
-		// service is now stopped
 		ServiceStatus.dwControlsAccepted &= ~(SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN);
 		ServiceStatus.dwCurrentState = SERVICE_STOPPED;
 		SetServiceStatus( hStatus, &ServiceStatus );
