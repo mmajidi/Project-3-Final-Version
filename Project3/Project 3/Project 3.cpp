@@ -10,7 +10,7 @@ SERVICE_STATUS_HANDLE hStatus;
 void  ServiceMain(int argc, char** argv); 
 void  ControlHandler(DWORD request); 
 HANDLE stopServiceEvent = 0;
-#define SERVICE_NAME  _T("Test Service V6")
+#define SERVICE_NAME  _T("Test Service V7")
 
 
 
@@ -40,19 +40,24 @@ void ServiceMain(int argc, char** argv)
 		(LPHANDLER_FUNCTION)ControlHandler); 
 
 
-    if (hStatus) 
-    { 
 
-		ServiceStatus.dwCurrentState = SERVICE_START_PENDING;
+	    if (hStatus == (SERVICE_STATUS_HANDLE)0)
+    {
+
+        ServiceStatus.dwCurrentState       = SERVICE_STOPPED;
+        ServiceStatus.dwWin32ExitCode      = -1; 
+        SetServiceStatus(hStatus, &ServiceStatus); 
+        return; 
+    } 
+
+
+   
+		ServiceStatus.dwControlsAccepted |= (SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN);
+		ServiceStatus.dwCurrentState = SERVICE_RUNNING;
 		SetServiceStatus( hStatus, &ServiceStatus );
 
 		 
 		HANDLE    stopServiceEvent = CreateEvent( 0, FALSE, FALSE, 0 );
-
-
-		ServiceStatus.dwControlsAccepted |= (SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN);
-		ServiceStatus.dwCurrentState = SERVICE_RUNNING;
-		SetServiceStatus( hStatus, &ServiceStatus );
 
 
 
@@ -73,7 +78,7 @@ void ServiceMain(int argc, char** argv)
 		SetServiceStatus( hStatus, &ServiceStatus );
 	return; 
 
-    }  
+    
 }
  
 
